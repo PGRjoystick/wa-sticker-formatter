@@ -10,11 +10,17 @@ import { IStickerOptions } from '..'
 const convert = async (
     data: Buffer,
     mime: string,
-    { quality = 100, background = defaultBg, type = StickerTypes.DEFAULT }: IStickerOptions
+    { quality = 100, background = defaultBg, type = StickerTypes.DEFAULT, skipReprocessing = false }: IStickerOptions
 ): Promise<Buffer> => {
     const isVideo = mime.startsWith('video')
     let image = isVideo ? await videoToGif(data) : data
     const isAnimated = isVideo || mime.includes('gif') || mime.includes('webp')
+
+    // If skipReprocessing is enabled and we have an optimized video, return as-is
+    if (skipReprocessing && isVideo && image.length <= 600 * 1024) {
+        console.log(`📦 Using pre-optimized video without re-processing: ${(image.length / 1024).toFixed(1)}KB`)
+        return image
+    }
 
     if (isAnimated && ['crop', 'circle', 'rouded'].includes(type)) {
         const filename = `${tmpdir()}/${Math.random().toString(36)}.webp`

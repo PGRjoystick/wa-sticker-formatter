@@ -18,15 +18,16 @@ export interface IStickerOptions extends IStickerConfig {
      * Can be crop or full. Defaults to 'default' (no changes)
      */
     type?: StickerTypes | string
-
     /**
-     * Quality of the output webp image. Must be an integer from 0 to 100 (defaults to 100
+     * Quality of the output webp image. Must be an integer from 0 to 100 (defaults to 100)
      */
     quality?: sharp.WebpOptions['quality']
     /**
      * Background Color of the sticker (only for type full)
      */
     background?: Color
+    /** Skip re-processing for already optimized content (internal use) */
+    skipReprocessing?: boolean
 }
 
 export interface IRawMetadata {

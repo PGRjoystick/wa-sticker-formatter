@@ -50,6 +50,25 @@ export class Sticker {
     }
 
     /**
+     * Create an optimized video sticker without re-processing
+     * Use this when you want to preserve video optimization from videoToGif
+     * @param data Video file path, url or Buffer 
+     * @param metadata Sticker options
+     * @returns Promise<Buffer> Optimized sticker buffer
+     */
+    public static createOptimizedVideo = async (
+        data: string | Buffer, 
+        metadata: Partial<IStickerOptions> = {}
+    ): Promise<Buffer> => {
+        const sticker = new Sticker(data, { 
+            ...metadata, 
+            skipReprocessing: true,
+            quality: metadata.quality ?? 30 // Use lower quality to preserve optimization
+        })
+        return sticker.build()
+    }
+
+    /**
      * Builds the sticker
      * @returns {Promise<Buffer>} A promise that resolves to the sticker buffer
      * @example
