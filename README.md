@@ -17,6 +17,51 @@ Wa-Sticker-Formatter is a simple tool which allows you to create and format What
 > npm i wa-sticker-formatter
 ```
 
+# Features
+
+✅ **WhatsApp Sticker Compliance**: Built-in validation against official WhatsApp requirements  
+✅ **Multiple Input Formats**: Support for images, GIFs, videos, URLs, file paths, and SVG  
+✅ **Animated Stickers**: Full support for animated WebP stickers with proper optimization  
+✅ **Flexible Sizing**: Multiple sizing options (crop, full, circle, rounded)  
+✅ **Metadata Support**: Complete sticker metadata with pack info and emoji categories  
+✅ **TypeScript Support**: Full TypeScript definitions included  
+✅ **Quality Control**: Adjustable quality settings for size optimization  
+
+# WhatsApp Compliance Validation
+
+This library includes comprehensive WhatsApp sticker compliance validation to ensure your stickers meet all official requirements.
+
+```typescript
+import { Sticker } from 'wa-sticker-formatter'
+
+const sticker = new Sticker('./image.png', {
+    pack: 'My Pack',
+    author: 'John Doe',
+    categories: ['😀', '🎉']
+})
+
+// Validate WhatsApp compliance
+const validation = await sticker.validateWhatsAppCompliance()
+
+if (validation.isValid) {
+    console.log('✅ Sticker is WhatsApp compliant!')
+} else {
+    console.log('❌ Issues found:', validation.errors)
+}
+
+// Get detailed compliance report
+const report = await sticker.getWhatsAppComplianceReport()
+console.log(report)
+```
+
+For detailed compliance information, see [WHATSAPP_COMPLIANCE.md](./WHATSAPP_COMPLIANCE.md).
+
+# Installation
+
+```cmd
+> npm i wa-sticker-formatter
+```
+
 # Usage
 
 Wa-Sticker-Formatter provides two ways to create stickers.
@@ -39,8 +84,8 @@ The paramers are the same for both.
 Before using the library, you need to import it.
 
 ```TS
-import { Sticker, createSticker, StickerTypes } from 'wa-sticker-formatter' // ES6
-// const { Sticker, createSticker, StickerTypes } = require('wa-sticker-formatter') // CommonJS
+import { Sticker, createSticker, StickerTypes, WhatsAppValidator, WHATSAPP_LIMITS } from 'wa-sticker-formatter' // ES6
+// const { Sticker, createSticker, StickerTypes, WhatsAppValidator, WHATSAPP_LIMITS } = require('wa-sticker-formatter') // CommonJS
 ```
 ## Using The `Sticker` constructor (Recommended)
 

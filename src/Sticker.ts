@@ -1,5 +1,5 @@
 import { existsSync, readFile, writeFile } from 'fs-extra'
-import { IStickerConfig, IStickerOptions } from './Types'
+import { IStickerConfig, IStickerOptions, IWhatsAppValidationResult } from './Types'
 import axios from 'axios'
 import Utils, { defaultBg } from './Utils'
 import { fromBuffer } from 'file-type'
@@ -8,6 +8,7 @@ import Exif from './internal/Metadata/Exif'
 import { StickerTypes } from './internal/Metadata/StickerTypes'
 import { Categories, extractMetadata } from '.'
 import { Color } from 'sharp'
+import { WhatsAppValidator } from './internal/WhatsAppValidation'
 
 /**
  * Sticker class
@@ -189,10 +190,60 @@ export class Sticker {
     public toMessage = async (): Promise<{ sticker: Buffer }> => ({ sticker: await this.build() })
 
     /**
+     * Validates the sticker against WhatsApp requirements
+     * @returns {Promise<IWhatsAppValidationResult>} Validation result with detailed compliance information
+     * @example
+     * const sticker = new Sticker('./image.png', { pack: 'My Pack', author: 'Me' })
+     * const validation = await sticker.validateWhatsAppCompliance()
+     * if (!validation.isValid) {
+     *   console.log('Validation errors:', validation.errors)
+     * }
+     */
+    public validateWhatsAppCompliance = async (): Promise<IWhatsAppValidationResult> => {
+        const buffer = await this.build()
+        return WhatsAppValidator.validateSticker(buffer, this.metadata)
+    }
+
+    /**
+     * Generates a WhatsApp compliance report for the sticker
+     * @returns {Promise<string>} Formatted compliance report
+     * @example
+     * const sticker = new Sticker('./image.png', { pack: 'My Pack', author: 'Me' })
+     * const report = await sticker.getWhatsAppComplianceReport()
+     * console.log(report)
+     */
+    public getWhatsAppComplianceReport = async (): Promise<string> => {
+        const validation = await this.validateWhatsAppCompliance()
+        return WhatsAppValidator.generateComplianceReport(validation)
+    }
+
+    /**
      * Extracts metadata from a WebP image.
      * @param {Buffer}image - The image buffer to extract metadata from
      */
     public static extractMetadata = extractMetadata
+
+    /**
+     * Validates a sticker buffer against WhatsApp requirements
+     * @param {Buffer} buffer - The sticker buffer to validate
+     * @param {Partial<IStickerOptions>} metadata - The sticker metadata
+     * @returns {Promise<IWhatsAppValidationResult>} Validation result
+     */
+    public static validateWhatsAppCompliance = WhatsAppValidator.validateSticker
+
+    /**
+     * Generates a WhatsApp compliance report for a sticker buffer
+     * @param {Buffer} buffer - The sticker buffer to validate
+     * @param {Partial<IStickerOptions>} metadata - The sticker metadata
+     * @returns {Promise<string>} Formatted compliance report
+     */
+    public static getWhatsAppComplianceReport = async (
+        buffer: Buffer,
+        metadata: Partial<IStickerOptions> = {}
+    ): Promise<string> => {
+        const validation = await WhatsAppValidator.validateSticker(buffer, metadata)
+        return WhatsAppValidator.generateComplianceReport(validation)
+    }
 }
 
 /**

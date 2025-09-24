@@ -36,6 +36,36 @@ export interface IRawMetadata {
     'sticker-pack-publisher': string
 }
 
+/** WhatsApp sticker validation result */
+export interface IWhatsAppValidationResult {
+    /** Whether the sticker meets all WhatsApp requirements */
+    isValid: boolean
+    /** List of validation errors */
+    errors: string[]
+    /** List of validation warnings */
+    warnings: string[]
+    /** File size validation */
+    fileSize: {
+        size: number
+        isValid: boolean
+        limit: number
+        type: 'static' | 'animated'
+    }
+    /** Dimensions validation */
+    dimensions: {
+        width: number
+        height: number
+        isValid: boolean
+    }
+    /** Metadata validation */
+    metadata: {
+        pack: { value: string; isValid: boolean; limit: number }
+        author: { value: string; isValid: boolean; limit: number }
+        id: { value: string; isValid: boolean; limit: number }
+        categories: { value: Categories[]; isValid: boolean; count: number; limit: number }
+    }
+}
+
 export type Metadata = IStickerConfig | IStickerOptions
 
 type Love =
