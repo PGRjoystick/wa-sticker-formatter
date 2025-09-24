@@ -19,10 +19,10 @@ const videoToGif = async (data: Buffer): Promise<Buffer> => {
     
     // Quality levels to try, from best to worst
     const qualityLevels = [
-        { quality: 50, fps: 10, duration: 10, compression: 5, method: 4 },
-        { quality: 40, fps: 8, duration: 6, compression: 6, method: 6 },
-        { quality: 30, fps: 6, duration: 5, compression: 6, method: 6 },
-        { quality: 25, fps: 5, duration: 4, compression: 6, method: 6 },
+        { quality: 50, fps: 10, duration: 6, compression: 5, method: 4 },
+        { quality: 40, fps: 8, duration: 5, compression: 6, method: 6 },
+        { quality: 30, fps: 6, duration: 4, compression: 6, method: 6 },
+        { quality: 25, fps: 5, duration: 3, compression: 6, method: 6 },
     ]
 
     let result: Buffer | null = null
