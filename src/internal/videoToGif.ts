@@ -130,8 +130,11 @@ const videoToGif = async (data: Buffer): Promise<Buffer> => {
                         '-vf',
                         [
                             `fps=${settings.fps}`, // Adaptive frame rate (>> 8ms minimum requirement)
-                            'scale=512:512:force_original_aspect_ratio=decrease:flags=lanczos', // Scale with high-quality filter
-                            'pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000', // Pad to 512x512 with fully transparent background
+                            // Smart scaling that preserves aspect ratio without forcing padding
+                            // For portrait videos (h > w): fit height to 512, center horizontally with transparency
+                            // For landscape videos (w > h): fit width to 512, center vertically with transparency
+                            'scale=\'if(gte(iw,ih),512,-1)\':\'if(gte(ih,iw),512,-1)\':flags=lanczos', // High quality scaling
+                            'pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000@0', // Center with fully transparent padding
                             ...(i > 1 ? ['mpdecimate=hi=64*12:lo=64*5:frac=0.33'] : []) // Remove duplicate frames on lower qualities
                         ].filter(Boolean).join(',')
                     ])
