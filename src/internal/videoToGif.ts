@@ -124,12 +124,14 @@ const videoToGif = async (data: Buffer): Promise<Buffer> => {
                         '-compression_level', String(settings.compression), // WebP compression (0-6)
                         '-q:v', String(settings.quality), // Quality level
                         '-method', String(settings.method), // Compression method (0-6, higher = smaller)
-                        // Optimized video filter chain for small file size:
+                        '-auto-alt-ref', '0', // Disable alt-ref frames for better transparency
+                        '-metadata:s:v:0', 'alpha_mode=1', // Enable alpha channel support
+                        // Optimized video filter chain for small file size with transparency:
                         '-vf',
                         [
                             `fps=${settings.fps}`, // Adaptive frame rate (>> 8ms minimum requirement)
                             'scale=512:512:force_original_aspect_ratio=decrease:flags=lanczos', // Scale with high-quality filter
-                            'pad=512:512:(ow-iw)/2:(oh-ih)/2:color=black@0', // Pad to 512x512 with transparent background
+                            'pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000', // Pad to 512x512 with fully transparent background
                             ...(i > 1 ? ['mpdecimate=hi=64*12:lo=64*5:frac=0.33'] : []) // Remove duplicate frames on lower qualities
                         ].filter(Boolean).join(',')
                     ])
